@@ -50,6 +50,8 @@ class CPU:
             self.reg[reg_a] += self.reg[reg_b]
         elif op == "SUB":
             self.reg[reg_a] -= self.reg[reg_b]
+        elif op == "MUL":
+            self.reg[reg_a] *= self.reg[reg_b]
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -90,8 +92,12 @@ class CPU:
                 self.pc += 1
                 print(self.reg[self.ram[self.pc]])
 
+            elif self.ir == 0b10100010: # MLT
+                self.alu("MUL", self.ram[self.ir + 1], self.ram[self.ir + 2])
+                self.pc += 2
+
             else:
-                print("Unknown instruction")
+                print(f"Unknown instruction: {self.ir}")
                 sys.exit(1)
 
             self.pc += 1 # increment program counter
