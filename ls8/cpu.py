@@ -9,6 +9,7 @@ class CPU:
         """Construct a new CPU."""
         self.ram = [0b00000000] * 255
         self.reg = [0] * 8
+        self.reg[7] = 255 # SP
         self.pc = 0
         self.ir = 0
         self.mar = 0
@@ -70,10 +71,12 @@ class CPU:
             self.ram_read(self.pc + 2)
         ), end='')
 
+
         for i in range(8):
             print(" %02X" % self.reg[i], end='')
 
         print()
+        print(self.ram)
 
     def run(self):
         """Run the CPU."""
@@ -82,11 +85,30 @@ class CPU:
             self.ir = self.ram[self.pc] # get current instruction using program counter
 
             if self.ir == 0b00000001: # HALT
+                # self.trace()
                 running = False
 
             elif self.ir == 0b10000010: # LDI
                 self.reg[self.ram[self.pc + 1]] = self.ram[self.pc + 2]
                 self.pc += 2
+
+            elif self.ir == 0b01000101: # PUSH
+                register = self.ram[self.pc + 1]
+                value = self.reg[register]
+                # decrement the Stack Pointer
+                self.reg[7] -= 1
+                # write the value of the given register to memory AT the SP location
+                self.ram[self.reg[7]] = value
+                self.pc += 1
+
+            elif self.ir == 0b01000110: # POP
+                register = self.ram[self.pc + 1]
+                # Write the value in memory at the top of stack to the given register
+                value = self.ram[self.reg[7]]
+                self.reg[register] = value
+                # increment the stack pointer
+                self.reg[7] += 1
+                self.pc += 1
 
             elif self.ir == 0b01000111: # PRN R0
                 self.pc += 1
