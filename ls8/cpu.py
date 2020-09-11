@@ -132,6 +132,14 @@ class CPU:
                 self.pc += 1
                 print(self.reg[self.ram[self.pc]])
 
+            elif self.ir == 0b10100000: # ADD
+                self.alu("ADD", self.ram[self.ir + 1], self.ram[self.ir + 2])
+                self.pc += 2
+
+            elif self.ir == 0b10100000: # SUB
+                self.alu("SUB", self.ram[self.ir + 1], self.ram[self.ir + 2])
+                self.pc += 2
+
             elif self.ir == 0b10100010: # MLT
                 self.alu("MUL", self.ram[self.ir + 1], self.ram[self.ir + 2])
                 self.pc += 2
