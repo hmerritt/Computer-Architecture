@@ -103,12 +103,30 @@ class CPU:
 
             elif self.ir == 0b01000110: # POP
                 register = self.ram[self.pc + 1]
-                # Write the value in memory at the top of stack to the given register
+                # write the value in memory at the top of stack to the given register
                 value = self.ram[self.reg[7]]
                 self.reg[register] = value
                 # increment the stack pointer
                 self.reg[7] += 1
                 self.pc += 1
+
+            elif self.ir == 0b01010000: # CALL
+                # push address of next instruction to the stack
+                ret_addr = self.pc + 2
+                self.reg[7] -= 1
+                self.ram[self.reg[7]] = ret_addr
+
+                # call sub-routine
+                reg_addr = self.ram[self.pc + 1]
+                self.pc = self.reg[reg_addr]
+                continue
+
+            elif self.ir == 0b00010001: # RET
+                # pop return address off the stack
+                ret_addr = self.ram[self.reg[7]]
+                self.reg[7] += 1
+                self.pc = ret_addr
+                continue
 
             elif self.ir == 0b01000111: # PRN R0
                 self.pc += 1
